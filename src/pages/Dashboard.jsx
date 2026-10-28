@@ -16,7 +16,9 @@ import { StatCard } from '../components/dashboard/StatCard';
 import { QuickActions } from '../components/dashboard/QuickActions';
 import { RecentActivity } from '../components/dashboard/RecentActivity';
 import { JobOverviewTable } from '../components/dashboard/JobOverviewTable';
-import { PostJobModal } from '../components/dashboard/PostJobModal';
+import { JobFormModal } from '../components/jobs/JobFormModal';
+import { CompanyManagement } from './CompanyManagement';
+import { JobManagement } from './JobManagement';
 import { StatSkeleton } from '../components/common/SkeletonLoader';
 import { EmptyState } from '../components/common/EmptyState';
 
@@ -59,7 +61,7 @@ export const Dashboard = () => {
               <div className="text-left">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-white text-xs font-semibold backdrop-blur-xs mb-2">
                   <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                  <span>Module 1 & 2 Active &bull; {user?.role || 'Candidate'} Portal</span>
+                  <span>Modules 1, 2, 3 & 4 Active &bull; {user?.role || 'Candidate'} Portal</span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
                   {greeting}, {user?.name || 'Explorer'}! 👋
@@ -71,23 +73,20 @@ export const Dashboard = () => {
                 </p>
               </div>
 
-              {/* Action button inside banner */}
+              {/* Action buttons inside banner */}
               <div className="flex items-center gap-3">
-                {user?.role === 'Recruiter' ? (
-                  <button
-                    onClick={() => setIsPostJobOpen(true)}
-                    className="px-5 py-3 rounded-xl bg-white text-blue-700 font-bold text-sm shadow-md hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
-                  >
-                    + Post a New Job
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setActiveTab('jobs')}
-                    className="px-5 py-3 rounded-xl bg-white text-blue-700 font-bold text-sm shadow-md hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
-                  >
-                    Explore 8,500+ Jobs
-                  </button>
-                )}
+                <button
+                  onClick={() => setIsPostJobOpen(true)}
+                  className="px-5 py-3 rounded-xl bg-white text-blue-700 font-bold text-sm shadow-md hover:bg-blue-50 active:scale-95 transition-all cursor-pointer"
+                >
+                  + Post a New Job
+                </button>
+                <button
+                  onClick={() => setActiveTab('companies')}
+                  className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm backdrop-blur-xs transition cursor-pointer"
+                >
+                  Partner Companies
+                </button>
               </div>
             </div>
 
@@ -199,108 +198,17 @@ export const Dashboard = () => {
             </div>
           )}
 
-          {/* TAB 2: JOBS DIRECTORY */}
+          {/* TAB 2: MODULE 4 - JOB POSTING & MANAGEMENT */}
           {activeTab === 'jobs' && (
             <div className="space-y-6">
-              <JobOverviewTable searchTerm={searchTerm} />
+              <JobManagement />
             </div>
           )}
 
-          {/* TAB 3: COMPANIES */}
+          {/* TAB 3: MODULE 3 - COMPANY MANAGEMENT */}
           {activeTab === 'companies' && (
-            <div className="space-y-6 text-left">
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900">Partner Companies</h3>
-                    <p className="text-xs text-slate-500">
-                      Verified organizations actively posting verified positions on JobPortal
-                    </p>
-                  </div>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">
-                    1,240 Verified
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {[
-                    {
-                      name: 'Google LLC',
-                      industry: 'Software & Cloud',
-                      openings: 42,
-                      location: 'Mountain View, CA',
-                      logo: 'https://images.unsplash.com/photo-1572021335469-31706a17aaef?auto=format&fit=crop&w=100&q=80',
-                    },
-                    {
-                      name: 'TechNova Global',
-                      industry: 'FinTech & AI',
-                      openings: 18,
-                      location: 'New York, NY',
-                      logo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=100&q=80',
-                    },
-                    {
-                      name: 'Stripe Inc',
-                      industry: 'Payment Processing',
-                      openings: 29,
-                      location: 'San Francisco, CA',
-                      logo: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=100&q=80',
-                    },
-                    {
-                      name: 'DataFlow Systems',
-                      industry: 'Data Infrastructure',
-                      openings: 14,
-                      location: 'Austin, TX',
-                      logo: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=100&q=80',
-                    },
-                    {
-                      name: 'Cognitive AI',
-                      industry: 'Machine Learning',
-                      openings: 23,
-                      location: 'Boston, MA',
-                      logo: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=100&q=80',
-                    },
-                    {
-                      name: 'CreativePulse',
-                      industry: 'Design & Media',
-                      openings: 9,
-                      location: 'Remote',
-                      logo: 'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?auto=format&fit=crop&w=100&q=80',
-                    },
-                  ].map((comp, idx) => (
-                    <div
-                      key={idx}
-                      className="p-5 rounded-2xl border border-slate-200/90 hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="flex items-center gap-3 mb-3">
-                          <img
-                            src={comp.logo}
-                            alt={comp.name}
-                            className="w-12 h-12 rounded-xl object-cover border border-slate-100"
-                          />
-                          <div>
-                            <h4 className="text-base font-bold text-slate-900">{comp.name}</h4>
-                            <span className="text-xs text-slate-500">{comp.industry}</span>
-                          </div>
-                        </div>
-                        <div className="text-xs text-slate-600 flex items-center justify-between pt-2 border-t border-slate-100">
-                          <span>{comp.location}</span>
-                          <span className="font-semibold text-blue-600">
-                            {comp.openings} open jobs
-                          </span>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => setActiveTab('jobs')}
-                        className="mt-4 w-full py-2 rounded-xl bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-600 text-xs font-semibold transition"
-                      >
-                        View Openings
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="space-y-6">
+              <CompanyManagement />
             </div>
           )}
 
@@ -368,8 +276,8 @@ export const Dashboard = () => {
         </main>
       </div>
 
-      {/* Recruiter Post Job Modal */}
-      <PostJobModal
+      {/* Recruiter / Quick Post Job Modal */}
+      <JobFormModal
         isOpen={isPostJobOpen}
         onClose={() => setIsPostJobOpen(false)}
       />

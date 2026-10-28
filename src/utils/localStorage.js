@@ -6,6 +6,8 @@ export const STORAGE_KEYS = {
   APPLICATIONS: 'jobportal_applications',
   ACTIVITIES: 'jobportal_recent_activities',
   DASHBOARD_STATS: 'jobportal_dashboard_stats',
+  COMPANIES_LIST: 'jobportal_companies_list',
+  JOBS_LIST: 'jobportal_jobs_list',
 };
 
 export const getFromStorage = (key, fallback) => {

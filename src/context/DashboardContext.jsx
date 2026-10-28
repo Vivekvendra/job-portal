@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   STORAGE_KEYS,
   getFromStorage,
@@ -9,18 +9,34 @@ import {
   INITIAL_ACTIVITIES,
   SAMPLE_JOBS,
 } from '../utils/mockData';
+import { SEED_COMPANIES, fetchCompaniesFromAPI } from '../services/apiService';
 import { toast } from 'react-toastify';
 
 const DashboardContext = createContext(null);
 
 export const DashboardProvider = ({ children }) => {
+  // Stats & Activities
   const [stats, setStats] = useState(() =>
     getFromStorage(STORAGE_KEYS.DASHBOARD_STATS, INITIAL_STATS)
   );
   const [activities, setActivities] = useState(() =>
     getFromStorage(STORAGE_KEYS.ACTIVITIES, INITIAL_ACTIVITIES)
   );
-  const [jobs, setJobs] = useState(SAMPLE_JOBS);
+
+  // Module 4: Jobs Management
+  const [jobs, setJobs] = useState(() =>
+    getFromStorage(STORAGE_KEYS.JOBS_LIST, SAMPLE_JOBS)
+  );
+
+  // Module 3: Companies Management
+  const [companies, setCompanies] = useState(() =>
+    getFromStorage(STORAGE_KEYS.COMPANIES_LIST, SEED_COMPANIES)
+  );
+  const [isCompaniesLoading, setIsCompaniesLoading] = useState(false);
+  const [companiesError, setCompaniesError] = useState(null);
+  const [apiSource, setApiSource] = useState('Local Storage Cache');
+
+  // Bookmarks & Applications
   const [savedJobs, setSavedJobs] = useState(() =>
     getFromStorage(STORAGE_KEYS.SAVED_JOBS, ['job_1', 'job_3'])
   );
@@ -38,12 +54,248 @@ export const DashboardProvider = ({ children }) => {
   );
   const [isDataLoading, setIsDataLoading] = useState(true);
 
+  // Initial fetch from Third-Party API
+  const loadCompanies = useCallback(async () => {
+    setIsCompaniesLoading(true);
+    setCompaniesError(null);
+    try {
+      const result = await fetchCompaniesFromAPI();
+      setCompanies(result.data);
+      setApiSource(result.source);
+    } catch (err) {
+      setCompaniesError('Failed to load companies from API. Displaying cached records.');
+      console.error(err);
+    } finally {
+      setIsCompaniesLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
+    loadCompanies();
     const timer = setTimeout(() => {
       setIsDataLoading(false);
     }, 400);
     return () => clearTimeout(timer);
-  }, []);
+  }, [loadCompanies]);
+
+  // Add Recent Activity helper
+  const addActivity = (act) => {
+    const newActivity = {
+      id: `act_${Date.now()}`,
+      time: 'Just now',
+      ...act,
+    };
+    const updated = [newActivity, ...activities.slice(0, 14)];
+    setActivities(updated);
+    saveToStorage(STORAGE_KEYS.ACTIVITIES, updated);
+  };
+
+  // ==========================================
+  // MODULE 3: COMPANY MANAGEMENT ACTIONS
+  // ==========================================
+
+  // Add Company
+  const addCompany = (companyData) => {
+    const newCompany = {
+      id: `comp_${Date.now()}`,
+      createdAt: new Date().toISOString().split('T')[0],
+      logo:
+        companyData.logo ||
+        `https://images.unsplash.com/photo-1572021335469-31706a17aaef?auto=format&fit=crop&w=200&q=80`,
+      ...companyData,
+    };
+
+    const updated = [newCompany, ...companies];
+    setCompanies(updated);
+    saveToStorage(STORAGE_KEYS.COMPANIES_LIST, updated);
+
+    // Update stats
+    setStats((prev) => {
+      const newStats = {
+        ...prev,
+        totalCompanies: prev.totalCompanies + 1,
+      };
+      saveToStorage(STORAGE_KEYS.DASHBOARD_STATS, newStats);
+      return newStats;
+    });
+
+    addActivity({
+      type: 'company_added',
+      user: 'You',
+      target: newCompany.name,
+      role: newCompany.industry,
+      status: 'Added',
+      iconColor: 'emerald',
+    });
+
+    toast.success(`Company "${newCompany.name}" added successfully!`);
+    return newCompany;
+  };
+
+  // Edit Company
+  const updateCompany = (id, updatedData) => {
+    const updated = companies.map((c) =>
+      c.id === id ? { ...c, ...updatedData, updatedAt: new Date().toISOString() } : c
+    );
+    setCompanies(updated);
+    saveToStorage(STORAGE_KEYS.COMPANIES_LIST, updated);
+    toast.success('Company details updated successfully!');
+  };
+
+  // Delete Company
+  const deleteCompany = (id) => {
+    const targetComp = companies.find((c) => c.id === id);
+    const updated = companies.filter((c) => c.id !== id);
+    setCompanies(updated);
+    saveToStorage(STORAGE_KEYS.COMPANIES_LIST, updated);
+
+    // Decrement stats
+    setStats((prev) => {
+      const newStats = {
+        ...prev,
+        totalCompanies: Math.max(0, prev.totalCompanies - 1),
+      };
+      saveToStorage(STORAGE_KEYS.DASHBOARD_STATS, newStats);
+      return newStats;
+    });
+
+    toast.info(`Company "${targetComp?.name || 'Item'}" deleted.`);
+  };
+
+  // ==========================================
+  // MODULE 4: JOB POSTING ACTIONS
+  // ==========================================
+
+  // Create Job Posting
+  const addJob = (jobData) => {
+    // Skills can be array or string
+    let parsedSkills = jobData.skills;
+    if (typeof parsedSkills === 'string') {
+      parsedSkills = parsedSkills
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    if (!parsedSkills || parsedSkills.length === 0) {
+      parsedSkills = ['React', 'JavaScript', 'Communication'];
+    }
+
+    const newJob = {
+      id: `job_${Date.now()}`,
+      postedDate: 'Just now',
+      applicantsCount: 0,
+      isSaved: false,
+      status: jobData.status || 'Open',
+      logo:
+        jobData.logo ||
+        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=100&q=80',
+      ...jobData,
+      skills: parsedSkills,
+    };
+
+    const updatedJobs = [newJob, ...jobs];
+    setJobs(updatedJobs);
+    saveToStorage(STORAGE_KEYS.JOBS_LIST, updatedJobs);
+
+    // Update stats
+    setStats((prev) => {
+      const newStats = {
+        ...prev,
+        totalJobs: prev.totalJobs + 1,
+        activeJobPostings:
+          newJob.status === 'Open' ? prev.activeJobPostings + 1 : prev.activeJobPostings,
+      };
+      saveToStorage(STORAGE_KEYS.DASHBOARD_STATS, newStats);
+      return newStats;
+    });
+
+    addActivity({
+      type: 'job_posted',
+      user: 'You',
+      target: newJob.title,
+      role: newJob.company,
+      status: 'Active',
+      iconColor: 'purple',
+    });
+
+    toast.success(`Job "${newJob.title}" created successfully!`);
+    return newJob;
+  };
+
+  // Edit Job
+  const updateJob = (id, updatedData) => {
+    let parsedSkills = updatedData.skills;
+    if (typeof parsedSkills === 'string') {
+      parsedSkills = parsedSkills
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+
+    const previousJob = jobs.find((j) => j.id === id);
+    const updated = jobs.map((j) => {
+      if (j.id === id) {
+        return {
+          ...j,
+          ...updatedData,
+          skills: parsedSkills || j.skills,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      return j;
+    });
+
+    setJobs(updated);
+    saveToStorage(STORAGE_KEYS.JOBS_LIST, updated);
+
+    // If status changed, adjust active count
+    if (previousJob && updatedData.status && previousJob.status !== updatedData.status) {
+      setStats((prev) => {
+        const delta = updatedData.status === 'Open' ? 1 : -1;
+        const newStats = {
+          ...prev,
+          activeJobPostings: Math.max(0, prev.activeJobPostings + delta),
+        };
+        saveToStorage(STORAGE_KEYS.DASHBOARD_STATS, newStats);
+        return newStats;
+      });
+    }
+
+    toast.success('Job posting updated successfully!');
+  };
+
+  // Delete Job
+  const deleteJob = (id) => {
+    const targetJob = jobs.find((j) => j.id === id);
+    const updated = jobs.filter((j) => j.id !== id);
+    setJobs(updated);
+    saveToStorage(STORAGE_KEYS.JOBS_LIST, updated);
+
+    // Update stats
+    setStats((prev) => {
+      const wasOpen = targetJob?.status === 'Open';
+      const newStats = {
+        ...prev,
+        totalJobs: Math.max(0, prev.totalJobs - 1),
+        activeJobPostings: wasOpen
+          ? Math.max(0, prev.activeJobPostings - 1)
+          : prev.activeJobPostings,
+      };
+      saveToStorage(STORAGE_KEYS.DASHBOARD_STATS, newStats);
+      return newStats;
+    });
+
+    toast.info(`Job "${targetJob?.title || 'Listing'}" deleted.`);
+  };
+
+  // Quick toggle Open / Closed
+  const toggleJobStatus = (id) => {
+    const job = jobs.find((j) => j.id === id);
+    if (!job) return;
+    const newStatus = job.status === 'Open' ? 'Closed' : 'Open';
+    updateJob(id, { status: newStatus });
+    toast.success(`Job marked as ${newStatus}`);
+  };
 
   // Toggle Save Job
   const toggleSaveJob = (jobId) => {
@@ -76,55 +328,6 @@ export const DashboardProvider = ({ children }) => {
       saveToStorage(STORAGE_KEYS.DASHBOARD_STATS, newStats);
       return newStats;
     });
-  };
-
-  // Add Recent Activity
-  const addActivity = (act) => {
-    const newActivity = {
-      id: `act_${Date.now()}`,
-      time: 'Just now',
-      ...act,
-    };
-    const updated = [newActivity, ...activities.slice(0, 14)];
-    setActivities(updated);
-    saveToStorage(STORAGE_KEYS.ACTIVITIES, updated);
-  };
-
-  // Quick Post Job (for Recruiters)
-  const postNewJob = (newJobData) => {
-    const newJob = {
-      id: `job_${Date.now()}`,
-      postedDate: 'Just now',
-      status: 'Open',
-      applicantsCount: 0,
-      isSaved: false,
-      logo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=100&q=80',
-      ...newJobData,
-    };
-    const updatedJobs = [newJob, ...jobs];
-    setJobs(updatedJobs);
-
-    setStats((prev) => {
-      const newStats = {
-        ...prev,
-        totalJobs: prev.totalJobs + 1,
-        activeJobPostings: prev.activeJobPostings + 1,
-      };
-      saveToStorage(STORAGE_KEYS.DASHBOARD_STATS, newStats);
-      return newStats;
-    });
-
-    addActivity({
-      type: 'job_posted',
-      user: 'You',
-      target: newJob.title,
-      role: newJob.company,
-      status: 'Active',
-      iconColor: 'purple',
-    });
-
-    toast.success(`Job "${newJob.title}" posted successfully!`);
-    return newJob;
   };
 
   // Quick Apply to Job
@@ -174,12 +377,26 @@ export const DashboardProvider = ({ children }) => {
       value={{
         stats,
         activities,
+        // Module 3
+        companies,
+        isCompaniesLoading,
+        companiesError,
+        apiSource,
+        addCompany,
+        updateCompany,
+        deleteCompany,
+        refetchCompanies: loadCompanies,
+        // Module 4
         jobs,
+        addJob,
+        updateJob,
+        deleteJob,
+        toggleJobStatus,
+        // Module 2 & Shared
         savedJobs,
         applications,
         isDataLoading,
         toggleSaveJob,
-        postNewJob,
         applyToJob,
         addActivity,
       }}
