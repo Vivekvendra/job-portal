@@ -25,7 +25,7 @@ export const INITIAL_USERS = [
   },
 ];
 
-// Module 2 Dashboard Statistics
+// Dashboard Statistics
 export const INITIAL_STATS = {
   totalCompanies: 1240,
   totalJobs: 8520,
@@ -97,7 +97,7 @@ export const INITIAL_ACTIVITIES = [
   },
 ];
 
-// Sample featured jobs for Module 4 Job Posting & Module 5 Job Search
+// Curated featured jobs for Job Postings and Career Search
 export const SAMPLE_JOBS = [
   {
     id: 'job_1',

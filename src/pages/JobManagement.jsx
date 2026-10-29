@@ -126,7 +126,7 @@ export const JobManagement = () => {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-              Module 4 Active &bull; Job Posting Engine
+              Recruitment Center &bull; Active Postings
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">

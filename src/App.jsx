@@ -24,12 +24,12 @@ export default function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
 
-            {/* Module 1: Authentication Routes */}
+            {/* Authentication Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
-            {/* Module 2-5: Dashboard Routes */}
+            {/* Dashboard Routes */}
             <Route
               path="/dashboard/*"
               element={

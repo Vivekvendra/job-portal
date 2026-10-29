@@ -65,7 +65,7 @@ export const Login = () => {
       setValue('email', 'recruiter@jobportal.com');
       setValue('password', 'password123');
     }
-    toast.info(`Filled credentials for ${role} demo account.`);
+    toast.info(`Filled credentials for ${role} account.`);
   };
 
   return (
@@ -400,11 +400,11 @@ export const Login = () => {
               </Link>
             </div>
 
-            {/* Quick Demo Autofill Hint */}
+            {/* Quick Fill Autofill Hint */}
             <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2 text-[11px]">
               <span className="text-slate-400 flex items-center gap-1">
                 <Sparkles className="w-3 h-3 text-amber-500" />
-                Quick Demo:
+                Quick Fill:
               </span>
               <div className="flex gap-1.5">
                 <button
@@ -430,7 +430,7 @@ export const Login = () => {
 
       {/* Subtle Bottom Footer */}
       <footer className="relative z-20 py-2 sm:py-2.5 text-center text-[11px] text-white/50 border-t border-white/10 shrink-0">
-        &copy; 2026 JobPortal System. All rights reserved.
+        &copy; 2026 JobPortal. All rights reserved.
       </footer>
     </div>
   );

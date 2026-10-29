@@ -23,7 +23,7 @@ export const DashboardProvider = ({ children }) => {
     getFromStorage(STORAGE_KEYS.ACTIVITIES, INITIAL_ACTIVITIES)
   );
 
-  // Module 4 & 5: Jobs Management
+  // Jobs Management
   const [jobs, setJobs] = useState(() => {
     const saved = getFromStorage(STORAGE_KEYS.JOBS_LIST, null);
     if (!saved || saved.length === 0) return SAMPLE_JOBS;
@@ -37,7 +37,7 @@ export const DashboardProvider = ({ children }) => {
     return saved;
   });
 
-  // Module 3: Companies Management
+  // Companies Management
   const [companies, setCompanies] = useState(() =>
     getFromStorage(STORAGE_KEYS.COMPANIES_LIST, SEED_COMPANIES)
   );
@@ -100,7 +100,7 @@ export const DashboardProvider = ({ children }) => {
   };
 
   // ==========================================
-  // MODULE 3: COMPANY MANAGEMENT ACTIONS
+  // COMPANY MANAGEMENT ACTIONS
   // ==========================================
 
   // Add Company
@@ -172,7 +172,7 @@ export const DashboardProvider = ({ children }) => {
   };
 
   // ==========================================
-  // MODULE 4: JOB POSTING ACTIONS
+  // JOB POSTING ACTIONS
   // ==========================================
 
   // Create Job Posting
@@ -386,7 +386,7 @@ export const DashboardProvider = ({ children }) => {
       value={{
         stats,
         activities,
-        // Module 3
+        // Companies
         companies,
         isCompaniesLoading,
         companiesError,
@@ -395,13 +395,13 @@ export const DashboardProvider = ({ children }) => {
         updateCompany,
         deleteCompany,
         refetchCompanies: loadCompanies,
-        // Module 4
+        // Jobs
         jobs,
         addJob,
         updateJob,
         deleteJob,
         toggleJobStatus,
-        // Module 2 & Shared
+        // Bookmarks & Applications
         savedJobs,
         applications,
         isDataLoading,

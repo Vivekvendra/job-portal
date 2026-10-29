@@ -206,13 +206,13 @@ export const JobSearch = () => {
 
   return (
     <div className="space-y-6 text-left">
-      {/* Module 5 Top Header Banner */}
+      {/* Top Header Banner */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 sm:p-8">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100 mb-2.5">
               <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-              <span>Module 5 &bull; Intelligent Job Search Engine</span>
+              <span>Opportunities &bull; Smart Job Search</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Explore Your Next Career Move
@@ -617,7 +617,7 @@ export const JobSearch = () => {
         </div>
       </div>
 
-      {/* Module 5: Job Detail View Modal */}
+      {/* Job Detail View Modal */}
       <JobDetailModal
         isOpen={Boolean(selectedJob)}
         onClose={() => setSelectedJob(null)}

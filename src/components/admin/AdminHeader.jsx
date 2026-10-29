@@ -51,13 +51,13 @@ export const AdminHeader = () => {
           </div>
         </div>
 
-        {/* Optional Link to Modules Portal */}
+        {/* Link to Main Portal */}
         <Link
           to="/dashboard"
           className="hidden md:inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-xl bg-white/80 hover:bg-white text-blue-700 border border-blue-200 shadow-xs transition"
           title="Go to Full Job Portal"
         >
-          Portal Modules &rarr;
+          Explore Portal &rarr;
         </Link>
       </div>
     </header>

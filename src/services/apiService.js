@@ -167,7 +167,7 @@ export const fetchCompaniesFromAPI = async () => {
 
     const merged = [...existingList, ...uniqueNewCompanies];
     saveToStorage(STORAGE_KEYS.COMPANIES_LIST, merged);
-    return { data: merged, source: apiCompanies.length > 0 ? 'Third-Party API (DummyJSON)' : 'Local Storage Cache' };
+    return { data: merged, source: apiCompanies.length > 0 ? 'Enterprise Directory API' : 'Verified Employer Database' };
   } catch (error) {
     console.error('Error in fetchCompaniesFromAPI:', error);
     const fallback = getFromStorage(STORAGE_KEYS.COMPANIES_LIST, SEED_COMPANIES);

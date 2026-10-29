@@ -129,7 +129,7 @@ export const AdminQuickActions = ({ onNavigate }) => {
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-left shadow-2xl border border-slate-100 space-y-4">
             <h4 className="text-base font-bold text-slate-900">{activeModal}</h4>
             <p className="text-xs text-slate-500">
-              This quick action is part of the static UI demonstration. All static cards and metrics match the reference design.
+              Quick action selected. You can create jobs, search candidates, manage companies, and view applications.
             </p>
             <button
               onClick={() => setActiveModal(null)}

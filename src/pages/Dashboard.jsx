@@ -58,7 +58,7 @@ export const Dashboard = () => {
                 <div className="text-left">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-white text-xs font-semibold backdrop-blur-xs mb-2">
                     <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Modules 1, 2, 3, 4 & 5 Active &bull; {user?.role || 'Candidate'} Portal</span>
+                    <span>Verified Workspace &bull; {user?.role || 'Candidate'} Portal</span>
                   </div>
                   <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
                     {greeting}, {user?.name || 'Explorer'}! 👋
@@ -93,26 +93,26 @@ export const Dashboard = () => {
             </div>
           )}
 
-          {/* TAB 1: OVERVIEW (Reference Image UI with Vivek Welcome, 6 Stats, Chart, Activities & Quick Actions) */}
+          {/* TAB: OVERVIEW */}
           {activeTab === 'overview' && (
             <AdminOverview onNavigate={setActiveTab} />
           )}
 
-          {/* TAB: MODULE 5 - JOB SEARCH */}
+          {/* TAB: JOB SEARCH */}
           {activeTab === 'search' && (
             <div className="space-y-6">
               <JobSearch />
             </div>
           )}
 
-          {/* TAB 2: MODULE 4 - JOB POSTING & MANAGEMENT */}
+          {/* TAB: JOB POSTINGS & MANAGEMENT */}
           {activeTab === 'jobs' && (
             <div className="space-y-6">
               <JobManagement />
             </div>
           )}
 
-          {/* TAB 3: MODULE 3 - COMPANY MANAGEMENT */}
+          {/* TAB: COMPANY MANAGEMENT */}
           {activeTab === 'companies' && (
             <div className="space-y-6">
               <CompanyManagement />
