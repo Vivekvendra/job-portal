@@ -23,10 +23,19 @@ export const DashboardProvider = ({ children }) => {
     getFromStorage(STORAGE_KEYS.ACTIVITIES, INITIAL_ACTIVITIES)
   );
 
-  // Module 4: Jobs Management
-  const [jobs, setJobs] = useState(() =>
-    getFromStorage(STORAGE_KEYS.JOBS_LIST, SAMPLE_JOBS)
-  );
+  // Module 4 & 5: Jobs Management
+  const [jobs, setJobs] = useState(() => {
+    const saved = getFromStorage(STORAGE_KEYS.JOBS_LIST, null);
+    if (!saved || saved.length === 0) return SAMPLE_JOBS;
+    const existingIds = new Set(saved.map((j) => j.id));
+    const newDefaults = SAMPLE_JOBS.filter((j) => !existingIds.has(j.id));
+    if (newDefaults.length > 0) {
+      const merged = [...saved, ...newDefaults];
+      saveToStorage(STORAGE_KEYS.JOBS_LIST, merged);
+      return merged;
+    }
+    return saved;
+  });
 
   // Module 3: Companies Management
   const [companies, setCompanies] = useState(() =>

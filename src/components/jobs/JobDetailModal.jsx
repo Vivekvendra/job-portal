@@ -72,35 +72,41 @@ export const JobDetailModal = ({
             </div>
           </div>
 
-          {/* Recruiter Management Controls */}
-          <div className="flex items-center gap-2 self-end sm:self-center">
-            <button
-              onClick={() => toggleJobStatus(job.id)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
-            >
-              Mark {isOpenStatus ? 'Closed' : 'Open'}
-            </button>
-            <button
-              onClick={() => {
-                onClose();
-                onEdit(job);
-              }}
-              className="p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-blue-600 transition cursor-pointer"
-              title="Edit Job"
-            >
-              <Edit className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => {
-                onClose();
-                onDelete(job);
-              }}
-              className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition cursor-pointer"
-              title="Delete Job"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
+          {/* Recruiter Management Controls (shown when edit/delete handlers provided) */}
+          {(onEdit || onDelete) && (
+            <div className="flex items-center gap-2 self-end sm:self-center">
+              <button
+                onClick={() => toggleJobStatus(job.id)}
+                className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+              >
+                Mark {isOpenStatus ? 'Closed' : 'Open'}
+              </button>
+              {onEdit && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    onEdit(job);
+                  }}
+                  className="p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-blue-600 transition cursor-pointer"
+                  title="Edit Job"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    onDelete(job);
+                  }}
+                  className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition cursor-pointer"
+                  title="Delete Job"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 4 Feature Badges Grid */}

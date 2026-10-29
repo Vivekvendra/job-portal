@@ -11,6 +11,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { Dashboard } from './pages/Dashboard';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 export default function App() {
   return (
@@ -18,15 +19,17 @@ export default function App() {
       <AuthProvider>
         <DashboardProvider>
           <Routes>
-            {/* Root redirects to Login as requested */}
+            {/* Root redirects to Login */}
             <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
 
             {/* Module 1: Authentication Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
-            {/* Module 2: Dashboard Routes (Protected) */}
+            {/* Module 2-5: Dashboard Routes */}
             <Route
               path="/dashboard/*"
               element={

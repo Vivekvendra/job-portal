@@ -17,11 +17,11 @@ export const QuickActions = ({ onOpenPostJob, onSelectTab }) => {
   const candidateActions = [
     {
       title: 'Find New Jobs',
-      description: 'Explore over 8,500+ verified active listings',
+      description: 'Search & filter verified positions by salary, location & type',
       icon: Search,
       color: 'bg-blue-500',
-      action: () => onSelectTab('jobs'),
-      btnText: 'Browse Jobs',
+      action: () => onSelectTab('search'),
+      btnText: 'Search Jobs',
     },
     {
       title: 'Saved Bookmarks',

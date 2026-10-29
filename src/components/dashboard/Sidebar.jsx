@@ -8,6 +8,7 @@ import {
   FileCheck,
   LogOut,
   X,
+  Search,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
@@ -30,8 +31,14 @@ export const Sidebar = ({ isOpen, onClose, activeTab, setActiveTab }) => {
       badge: null,
     },
     {
+      id: 'search',
+      label: 'Job Search',
+      icon: Search,
+      badge: 'Hot',
+    },
+    {
       id: 'jobs',
-      label: 'Jobs Directory',
+      label: 'Job Postings',
       icon: Briefcase,
       badge: '8.5K',
     },
