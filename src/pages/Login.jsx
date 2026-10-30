@@ -61,11 +61,12 @@ export const Login = () => {
     if (role === 'Candidate') {
       setValue('email', 'candidate@jobportal.com');
       setValue('password', 'password123');
+      toast.info('Filled credentials for Candidate (Vivek Sharma).');
     } else {
       setValue('email', 'recruiter@jobportal.com');
       setValue('password', 'password123');
+      toast.info('Filled credentials for Recruiter (Priya Nair).');
     }
-    toast.info(`Filled credentials for ${role} account.`);
   };
 
   return (
@@ -412,14 +413,14 @@ export const Login = () => {
                   onClick={() => handleQuickFill('Candidate')}
                   className="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded font-medium transition cursor-pointer"
                 >
-                  Candidate
+                  Candidate (Vivek)
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickFill('Recruiter')}
                   className="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded font-medium transition cursor-pointer"
                 >
-                  Recruiter
+                  Recruiter (Priya)
                 </button>
               </div>
             </div>

@@ -8,6 +8,7 @@ import {
   INITIAL_STATS,
   INITIAL_ACTIVITIES,
   SAMPLE_JOBS,
+  INITIAL_CANDIDATE_APPLICATIONS,
 } from '../utils/mockData';
 import { SEED_COMPANIES, fetchCompaniesFromAPI } from '../services/apiService';
 import { toast } from 'react-toastify';
@@ -60,6 +61,10 @@ export const DashboardProvider = ({ children }) => {
         status: 'In Review',
       },
     ])
+  );
+  // Recruiter Inbound Candidate Applications
+  const [candidateApplications, setCandidateApplications] = useState(() =>
+    getFromStorage(STORAGE_KEYS.CANDIDATE_APPLICATIONS, INITIAL_CANDIDATE_APPLICATIONS)
   );
   const [isDataLoading, setIsDataLoading] = useState(true);
 
@@ -339,13 +344,31 @@ export const DashboardProvider = ({ children }) => {
     });
   };
 
-  // Quick Apply to Job
-  const applyToJob = (job) => {
+  // Quick Apply to Job (Synchronizes to both Candidate & Recruiter panels)
+  const applyToJob = (job, candidateInfo = null) => {
     const alreadyApplied = applications.some((app) => app.jobId === job.id);
     if (alreadyApplied) {
       toast.warning('You have already applied for this position!');
       return false;
     }
+
+    // Retrieve active logged-in user from storage or fallback
+    const currentUser = candidateInfo || getFromStorage(STORAGE_KEYS.CURRENT_USER, null);
+    const applicantName = currentUser?.name || 'Vivek Sharma';
+    const applicantEmail = currentUser?.email || 'candidate@jobportal.com';
+    const applicantPhone = currentUser?.mobile || '+91 98765 43210';
+    const applicantLocation = currentUser?.address || 'Bengaluru, India';
+    const applicantAvatar =
+      currentUser?.avatar ||
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&q=80';
+    const applicantSkills =
+      Array.isArray(currentUser?.skills) && currentUser.skills.length > 0
+        ? currentUser.skills
+        : Array.isArray(job.skills)
+        ? job.skills
+        : ['React', 'TypeScript', 'Tailwind CSS'];
+    const applicantResume =
+      currentUser?.resume?.fileName || `${applicantName.replace(/\s+/g, '_')}_Resume.pdf`;
 
     const newApp = {
       id: `app_${Date.now()}`,
@@ -372,17 +395,94 @@ export const DashboardProvider = ({ children }) => {
       return newStats;
     });
 
+    // Also record for Recruiter inbound applications review - this reflects directly into the Recruiter Pipeline!
+    const newCandApp = {
+      id: `cand_app_${Date.now()}`,
+      candidateName: applicantName,
+      email: applicantEmail,
+      phone: applicantPhone,
+      location: applicantLocation,
+      avatar: applicantAvatar,
+      title: job.title,
+      jobId: job.id,
+      jobTitle: job.title,
+      company: job.company,
+      appliedDate: new Date().toISOString().split('T')[0],
+      status: 'Submitted',
+      matchScore: 96,
+      experienceYears: '5+ years',
+      skills: applicantSkills,
+      resumeName: applicantResume,
+      notes: `Inbound application submitted by ${applicantName} for ${job.title} at ${job.company}. Ready for recruiter evaluation.`,
+    };
+    const updatedCandApps = [newCandApp, ...candidateApplications];
+    setCandidateApplications(updatedCandApps);
+    saveToStorage(STORAGE_KEYS.CANDIDATE_APPLICATIONS, updatedCandApps);
+
+    // Update job applicant count
+    const updatedJobs = jobs.map((j) =>
+      j.id === job.id ? { ...j, applicantsCount: (j.applicantsCount || 0) + 1 } : j
+    );
+    setJobs(updatedJobs);
+    saveToStorage(STORAGE_KEYS.JOBS_LIST, updatedJobs);
+
     addActivity({
       type: 'application_submitted',
-      user: 'You',
+      user: applicantName,
       target: job.company,
       role: job.title,
       status: 'Submitted',
       iconColor: 'blue',
     });
 
-    toast.success(`Successfully applied to ${job.title} at ${job.company}!`);
+    toast.success(
+      `Successfully applied to ${job.title} at ${job.company}! Delivered to recruiter pipeline.`
+    );
     return true;
+  };
+
+  // Recruiter: Update Candidate Hiring Stage & Notes
+  const updateCandidateStatus = (appId, newStatus, notes = null) => {
+    const target = candidateApplications.find((a) => a.id === appId);
+    if (!target) return;
+
+    const updated = candidateApplications.map((app) => {
+      if (app.id === appId) {
+        return {
+          ...app,
+          status: newStatus,
+          notes: notes !== null ? notes : app.notes,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      return app;
+    });
+
+    setCandidateApplications(updated);
+    saveToStorage(STORAGE_KEYS.CANDIDATE_APPLICATIONS, updated);
+
+    // Sync candidate's own view if present
+    const syncedApps = applications.map((app) =>
+      app.jobId === target.jobId ? { ...app, status: newStatus } : app
+    );
+    setApplications(syncedApps);
+    saveToStorage(STORAGE_KEYS.APPLICATIONS, syncedApps);
+
+    addActivity({
+      type: 'candidate_status_updated',
+      user: 'You (Recruiter)',
+      target: target.candidateName,
+      role: `${target.jobTitle} - ${newStatus}`,
+      status: newStatus,
+      iconColor:
+        newStatus === 'Offer Extended'
+          ? 'emerald'
+          : newStatus === 'Rejected'
+          ? 'rose'
+          : 'blue',
+    });
+
+    toast.success(`Candidate ${target.candidateName} advanced to ${newStatus}`);
   };
 
   // Withdraw Application (UI Only)
@@ -436,6 +536,8 @@ export const DashboardProvider = ({ children }) => {
         // Bookmarks & Applications
         savedJobs,
         applications,
+        candidateApplications,
+        updateCandidateStatus,
         isDataLoading,
         toggleSaveJob,
         removeSavedJob,

@@ -8,8 +8,10 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../context/AuthContext';
 
 export const AdminQuickActions = ({ onNavigate }) => {
+  const { user } = useAuth();
   const [activeModal, setActiveModal] = useState(null);
 
   const ACTIONS = [
@@ -66,7 +68,7 @@ export const AdminQuickActions = ({ onNavigate }) => {
       iconBg: 'bg-indigo-600',
       action: () => {
         if (onNavigate) {
-          onNavigate('applications');
+          onNavigate(user?.role === 'Recruiter' ? 'recruiter-applicants' : 'applications');
         } else {
           setActiveModal('View Applications');
           toast.info('Opening Applications Review');

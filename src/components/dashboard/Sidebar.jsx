@@ -10,13 +10,15 @@ import {
   X,
   Search,
   User,
+  BarChart3,
+  UserCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
 
 export const Sidebar = ({ isOpen, onClose, activeTab, setActiveTab }) => {
   const { user, logout, switchRole } = useAuth();
-  const { savedJobs, applications } = useDashboard();
+  const { savedJobs, applications, candidateApplications } = useDashboard();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -24,7 +26,48 @@ export const Sidebar = ({ isOpen, onClose, activeTab, setActiveTab }) => {
     navigate('/login');
   };
 
-  const navItems = [
+  const isRecruiter = user?.role === 'Recruiter';
+
+  const recruiterNavItems = [
+    {
+      id: 'overview',
+      label: 'Overview',
+      icon: LayoutDashboard,
+      badge: null,
+    },
+    {
+      id: 'recruiter-applicants',
+      label: 'Inbound Applicants',
+      icon: UserCheck,
+      badge: candidateApplications?.length > 0 ? `${candidateApplications.length} New` : null,
+    },
+    {
+      id: 'jobs',
+      label: 'Job Management',
+      icon: Briefcase,
+      badge: '8.5K',
+    },
+    {
+      id: 'companies',
+      label: 'Company Profile',
+      icon: Building2,
+      badge: '1.2K',
+    },
+    {
+      id: 'search',
+      label: 'Talent Discovery',
+      icon: Search,
+      badge: null,
+    },
+    {
+      id: 'reports',
+      label: 'Recruitment Analytics',
+      icon: BarChart3,
+      badge: 'Live',
+    },
+  ];
+
+  const candidateNavItems = [
     {
       id: 'overview',
       label: 'Overview',
@@ -38,20 +81,8 @@ export const Sidebar = ({ isOpen, onClose, activeTab, setActiveTab }) => {
       badge: 'Hot',
     },
     {
-      id: 'jobs',
-      label: 'Job Postings',
-      icon: Briefcase,
-      badge: '8.5K',
-    },
-    {
-      id: 'companies',
-      label: 'Companies',
-      icon: Building2,
-      badge: '1.2K',
-    },
-    {
       id: 'applications',
-      label: 'Applications',
+      label: 'My Applications',
       icon: FileCheck,
       badge: applications.length > 0 ? applications.length : null,
     },
@@ -67,7 +98,37 @@ export const Sidebar = ({ isOpen, onClose, activeTab, setActiveTab }) => {
       icon: User,
       badge: null,
     },
+    {
+      id: 'jobs',
+      label: 'Job Postings',
+      icon: Briefcase,
+      badge: '8.5K',
+    },
+    {
+      id: 'companies',
+      label: 'Companies',
+      icon: Building2,
+      badge: '1.2K',
+    },
+    {
+      id: 'reports',
+      label: 'Reports & Analytics',
+      icon: BarChart3,
+      badge: null,
+    },
   ];
+
+  const navItems = isRecruiter ? recruiterNavItems : candidateNavItems;
+
+  const handleRoleToggle = () => {
+    const nextRole = isRecruiter ? 'Candidate' : 'Recruiter';
+    switchRole(nextRole);
+    if (nextRole === 'Recruiter') {
+      setActiveTab('recruiter-applicants');
+    } else {
+      setActiveTab('overview');
+    }
+  };
 
   return (
     <>
@@ -125,9 +186,7 @@ export const Sidebar = ({ isOpen, onClose, activeTab, setActiveTab }) => {
               <span>Switch View:</span>
               <button
                 type="button"
-                onClick={() =>
-                  switchRole(user?.role === 'Recruiter' ? 'Candidate' : 'Recruiter')
-                }
+                onClick={handleRoleToggle}
                 className="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
               >
                 Switch to {user?.role === 'Recruiter' ? 'Candidate' : 'Recruiter'}
@@ -184,17 +243,17 @@ export const Sidebar = ({ isOpen, onClose, activeTab, setActiveTab }) => {
               <img
                 src={
                   user?.avatar ||
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80'
+                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80'
                 }
                 alt={user?.name || 'User avatar'}
                 className="w-9 h-9 rounded-full object-cover shrink-0 border border-slate-200"
               />
               <div className="min-w-0 text-left">
                 <div className="text-sm font-bold text-slate-800 truncate">
-                  {user?.name || 'Sarah Jenkins'}
+                  {user?.name || (isRecruiter ? 'Priya Nair' : 'Vivek Sharma')}
                 </div>
                 <div className="text-xs text-slate-500 truncate">
-                  {user?.email || 'user@jobportal.com'}
+                  {user?.email || (isRecruiter ? 'recruiter@jobportal.com' : 'candidate@jobportal.com')}
                 </div>
               </div>
             </div>

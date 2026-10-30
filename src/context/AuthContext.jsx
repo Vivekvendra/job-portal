@@ -7,7 +7,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [users, setUsers] = useState(() => {
     let storedUsers = getFromStorage(STORAGE_KEYS.ALL_USERS, null);
-    if (!storedUsers || storedUsers.length === 0) {
+    if (!storedUsers || storedUsers.length === 0 || storedUsers[0]?.name === 'Sarah Jenkins') {
       storedUsers = INITIAL_USERS;
       saveToStorage(STORAGE_KEYS.ALL_USERS, INITIAL_USERS);
     }
@@ -17,9 +17,16 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const saved = getFromStorage(STORAGE_KEYS.CURRENT_USER, null);
     if (!saved) return null;
-    if (saved.role === 'Candidate' && !saved.experience) {
+    // Auto upgrade legacy demo names to Vivek Sharma / Priya Nair
+    if (saved.name === 'Sarah Jenkins' || (saved.role === 'Candidate' && !saved.experience)) {
       const def = INITIAL_USERS[0];
-      const merged = { ...def, ...saved };
+      const merged = { ...def, ...saved, name: 'Vivek Sharma', email: 'candidate@jobportal.com' };
+      saveToStorage(STORAGE_KEYS.CURRENT_USER, merged);
+      return merged;
+    }
+    if (saved.name === 'Alex Rivera' || (saved.role === 'Recruiter' && saved.name !== 'Priya Nair')) {
+      const def = INITIAL_USERS[1];
+      const merged = { ...def, ...saved, name: 'Priya Nair', email: 'recruiter@jobportal.com' };
       saveToStorage(STORAGE_KEYS.CURRENT_USER, merged);
       return merged;
     }

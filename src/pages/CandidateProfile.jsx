@@ -71,7 +71,7 @@ export const CandidateProfile = () => {
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  {user?.name || 'Sarah Jenkins'}
+                  {user?.name || 'Vivek Sharma'}
                 </h1>
                 <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                   {user?.role || 'Candidate'}
@@ -83,7 +83,7 @@ export const CandidateProfile = () => {
               <div className="flex items-center gap-4 text-xs text-slate-500 pt-1 flex-wrap">
                 <span className="flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                  {user?.address || 'San Francisco, CA'}
+                  {user?.address || 'Bengaluru, India'}
                 </span>
                 <span>&bull;</span>
                 <span className="flex items-center gap-1">
@@ -93,7 +93,7 @@ export const CandidateProfile = () => {
                 <span>&bull;</span>
                 <span className="flex items-center gap-1">
                   <Phone className="w-3.5 h-3.5 text-slate-400" />
-                  {user?.mobile || '+1 (555) 234-5678'}
+                  {user?.mobile || '+91 98765 43210'}
                 </span>
               </div>
             </div>

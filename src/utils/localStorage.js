@@ -8,6 +8,7 @@ export const STORAGE_KEYS = {
   DASHBOARD_STATS: 'jobportal_dashboard_stats',
   COMPANIES_LIST: 'jobportal_companies_list',
   JOBS_LIST: 'jobportal_jobs_list',
+  CANDIDATE_APPLICATIONS: 'jobportal_candidate_applications',
 };
 
 export const getFromStorage = (key, fallback) => {

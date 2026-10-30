@@ -144,14 +144,16 @@ export const Topbar = ({ onOpenSidebar, searchTerm, setSearchTerm }) => {
           <img
             src={
               user?.avatar ||
-              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80'
+              (user?.role === 'Recruiter'
+                ? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80'
+                : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80')
             }
             alt={user?.name}
             className="w-9 h-9 rounded-full object-cover border border-slate-200"
           />
           <div className="hidden md:block text-left">
             <div className="text-xs font-bold text-slate-800 leading-tight">
-              {user?.name || 'Sarah Jenkins'}
+              {user?.name || (user?.role === 'Recruiter' ? 'Priya Nair' : 'Vivek Sharma')}
             </div>
             <div className="text-[11px] text-slate-400 font-medium">
               {user?.role || 'Candidate'}
