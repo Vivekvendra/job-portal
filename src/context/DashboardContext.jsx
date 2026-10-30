@@ -352,7 +352,11 @@ export const DashboardProvider = ({ children }) => {
       jobId: job.id,
       title: job.title,
       company: job.company,
-      appliedDate: '2026-10-27',
+      location: job.location || 'Remote',
+      salary: job.salary || 'Competitive',
+      logo: job.logo,
+      type: job.type || 'Full-time',
+      appliedDate: new Date().toISOString().split('T')[0],
       status: 'Submitted',
     };
     const updatedApps = [newApp, ...applications];
@@ -381,6 +385,34 @@ export const DashboardProvider = ({ children }) => {
     return true;
   };
 
+  // Withdraw Application (UI Only)
+  const withdrawApplication = (appId) => {
+    const target = applications.find((a) => a.id === appId);
+    if (!target) return;
+    const updated = applications.map((app) =>
+      app.id === appId ? { ...app, status: 'Withdrawn' } : app
+    );
+    setApplications(updated);
+    saveToStorage(STORAGE_KEYS.APPLICATIONS, updated);
+    toast.info(`Application for "${target.title}" withdrawn.`);
+    addActivity({
+      type: 'application_withdrawn',
+      user: 'You',
+      target: target.company,
+      role: target.title,
+      status: 'Withdrawn',
+      iconColor: 'rose',
+    });
+  };
+
+  // Remove Saved Job
+  const removeSavedJob = (jobId) => {
+    const updated = savedJobs.filter((id) => id !== jobId);
+    setSavedJobs(updated);
+    saveToStorage(STORAGE_KEYS.SAVED_JOBS, updated);
+    toast.info('Job removed from saved bookmarks.');
+  };
+
   return (
     <DashboardContext.Provider
       value={{
@@ -406,7 +438,9 @@ export const DashboardProvider = ({ children }) => {
         applications,
         isDataLoading,
         toggleSaveJob,
+        removeSavedJob,
         applyToJob,
+        withdrawApplication,
         addActivity,
       }}
     >

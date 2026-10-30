@@ -1,23 +1,18 @@
 import React, { useState } from 'react';
-import {
-  FileCheck,
-  Sparkles,
-} from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useDashboard } from '../context/DashboardContext';
 import { Sidebar } from '../components/dashboard/Sidebar';
 import { Topbar } from '../components/dashboard/Topbar';
-import { JobOverviewTable } from '../components/dashboard/JobOverviewTable';
 import { JobFormModal } from '../components/jobs/JobFormModal';
 import { CompanyManagement } from './CompanyManagement';
 import { JobManagement } from './JobManagement';
 import { JobSearch } from './JobSearch';
 import { AdminOverview } from '../components/admin/AdminOverview';
-import { EmptyState } from '../components/common/EmptyState';
+import { CandidateProfile } from './CandidateProfile';
+import { ApplicationsManagement } from './ApplicationsManagement';
 
 export const Dashboard = () => {
   const { user } = useAuth();
-  const { applications } = useDashboard();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
@@ -119,65 +114,24 @@ export const Dashboard = () => {
             </div>
           )}
 
-          {/* TAB 4: APPLICATIONS */}
+          {/* TAB: APPLICATIONS */}
           {activeTab === 'applications' && (
-            <div className="space-y-6 text-left">
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900">Your Applications</h3>
-                    <p className="text-xs text-slate-500">
-                      Track submissions, interviews, and progress across all applied positions
-                    </p>
-                  </div>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
-                    {applications.length} Submitted
-                  </span>
-                </div>
-
-                {applications.length === 0 ? (
-                  <EmptyState
-                    title="No applications submitted yet"
-                    description="Browse available positions and submit your application with a single click."
-                    actionText="Browse Open Jobs"
-                    onAction={() => setActiveTab('jobs')}
-                  />
-                ) : (
-                  <div className="divide-y divide-slate-100">
-                    {applications.map((app) => (
-                      <div
-                        key={app.id}
-                        className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                      >
-                        <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                            <FileCheck className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-bold text-slate-900">{app.title}</div>
-                            <div className="text-xs text-slate-500">
-                              {app.company} &bull; Applied on {app.appliedDate}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                            {app.status}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            <div className="space-y-6">
+              <ApplicationsManagement defaultTab="applications" onNavigate={setActiveTab} />
             </div>
           )}
 
-          {/* TAB 5: SAVED JOBS */}
+          {/* TAB: SAVED JOBS */}
           {activeTab === 'saved' && (
             <div className="space-y-6">
-              <JobOverviewTable searchTerm={searchTerm} filterSavedOnly={true} />
+              <ApplicationsManagement defaultTab="saved" onNavigate={setActiveTab} />
+            </div>
+          )}
+
+          {/* TAB: CANDIDATE PROFILE */}
+          {activeTab === 'profile' && (
+            <div className="space-y-6">
+              <CandidateProfile />
             </div>
           )}
         </main>

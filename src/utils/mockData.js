@@ -1,4 +1,4 @@
-// Initial pre-seeded demo users for immediate testing
+// Initial pre-seeded users
 export const INITIAL_USERS = [
   {
     id: 'user_1',
@@ -7,9 +7,43 @@ export const INITIAL_USERS = [
     password: 'password123',
     role: 'Candidate',
     title: 'Senior Frontend Developer',
+    mobile: '+1 (555) 234-5678',
+    address: '742 Evergreen Terrace, San Francisco, CA 94107',
+    bio: 'Senior Frontend Engineer with 5+ years building performant React applications, scalable component systems, and accessible design frameworks across enterprise products.',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
-    location: 'San Francisco, CA',
-    skills: ['React', 'TypeScript', 'Tailwind CSS', 'Next.js'],
+    skills: ['React', 'TypeScript', 'Tailwind CSS', 'Next.js', 'Redux Toolkit', 'GraphQL', 'REST APIs', 'Jest'],
+    experience: [
+      {
+        id: 'exp_1',
+        title: 'Senior Frontend Engineer',
+        company: 'TechNova Global',
+        duration: '2023 - Present',
+        location: 'San Francisco, CA',
+        description: 'Lead frontend architect for analytics dashboards. Reduced bundle size by 40% and improved Core Web Vitals across enterprise portals.',
+      },
+      {
+        id: 'exp_2',
+        title: 'Frontend Developer',
+        company: 'CreativePulse Design',
+        duration: '2020 - 2023',
+        location: 'San Francisco, CA',
+        description: 'Developed reusable UI component library with Tailwind CSS and React Hook Form, accelerating sprint delivery by 25%.',
+      },
+    ],
+    education: [
+      {
+        id: 'edu_1',
+        degree: 'Bachelor of Science in Computer Science',
+        institution: 'University of California, Berkeley',
+        year: '2016 - 2020',
+        grade: 'GPA: 3.8 / 4.0 (Magna Cum Laude)',
+      },
+    ],
+    resume: {
+      fileName: 'Sarah_Jenkins_Resume_2026.pdf',
+      fileSize: '245 KB',
+      uploadDate: '2026-10-15',
+    },
   },
   {
     id: 'user_2',

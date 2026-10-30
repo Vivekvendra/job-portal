@@ -15,7 +15,15 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [user, setUser] = useState(() => {
-    return getFromStorage(STORAGE_KEYS.CURRENT_USER, null);
+    const saved = getFromStorage(STORAGE_KEYS.CURRENT_USER, null);
+    if (!saved) return null;
+    if (saved.role === 'Candidate' && !saved.experience) {
+      const def = INITIAL_USERS[0];
+      const merged = { ...def, ...saved };
+      saveToStorage(STORAGE_KEYS.CURRENT_USER, merged);
+      return merged;
+    }
+    return saved;
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -140,6 +148,19 @@ export const AuthProvider = ({ children }) => {
     saveToStorage(STORAGE_KEYS.ALL_USERS, updatedUsers);
   };
 
+  // Update Profile
+  const updateProfile = (profileData) => {
+    if (!user) return null;
+    const updatedUser = { ...user, ...profileData };
+    setUser(updatedUser);
+    saveToStorage(STORAGE_KEYS.CURRENT_USER, updatedUser);
+
+    const updatedUsers = users.map((u) => (u.id === user.id ? updatedUser : u));
+    setUsers(updatedUsers);
+    saveToStorage(STORAGE_KEYS.ALL_USERS, updatedUsers);
+    return updatedUser;
+  };
+
   // Logout handler
   const logout = () => {
     setUser(null);
@@ -159,6 +180,7 @@ export const AuthProvider = ({ children }) => {
         forgotPassword,
         resetPassword,
         switchRole,
+        updateProfile,
         logout,
       }}
     >

@@ -9,6 +9,7 @@ import {
   LogOut,
   X,
   Search,
+  User,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
@@ -59,6 +60,12 @@ export const Sidebar = ({ isOpen, onClose, activeTab, setActiveTab }) => {
       label: 'Saved Jobs',
       icon: Bookmark,
       badge: savedJobs.length > 0 ? savedJobs.length : null,
+    },
+    {
+      id: 'profile',
+      label: 'Candidate Profile',
+      icon: User,
+      badge: null,
     },
   ];
 
